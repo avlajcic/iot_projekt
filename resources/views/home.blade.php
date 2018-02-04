@@ -45,47 +45,59 @@
                     </div>
 
                     <div id="time-settings">
-                        <h4>Soba 1</h4>
-                        <label for="ex2">Vrijeme rada: </label>
-                        <b>0</b>
-                        <input id="ex2" type="text" class="span2" value=""
-                               data-slider-min="0" data-slider-max="24"
-                               data-slider-step="0.25" data-slider-value="[7,22]" name="time-schedule"/>
-                        <b>24</b>
-                        <br>
-                        <label for="automaticCheck">Automatski rad:</label>
-                        <input id="automaticCheck" type="checkbox" name="automatic" value="automatic"><br>
+                        <form method="post" action="/time-settings">
+                        {{ csrf_field() }}
+                        @foreach ($rooms as $room)
+                            <h4>{{ $room->name }}</h4>
+                            <label for="time-slider{{ $room->id }}">Vrijeme rada: </label>
+                            <b>0</b>
+                            <input id="time-slider{{ $room->id }}" type="text" class="span2 time-slider" value=""
+                                   data-slider-min="0" data-slider-max="24"
+                                   data-slider-step="0.25" data-slider-value="[7,22]" name="time_schedule[]"/>
+                            <b>24</b>
+                            <br>
+                            <label for="automaticCheck">Automatski rad:</label>
+                            <input id="automaticCheck" type="checkbox" name="automatic[]" value="{{ $room->id }}" @if ($room->automatic) checked @endif>
+                            <input type="hidden" value="{{ $room->id }}" name="room_id[]">
+                            <br>
+                        @endforeach
+                        <input type="submit" class="btn btn-success pull-right" value="Spremi" name="submit">
+                        </form>
                     </div>
 
                     <div id="brightness-settings">
-                        <h4>Soba 1</h4>
-                        <label for="ex1">Jačina svjetla: </label>
-                        <input id="ex1" data-slider-id='ex1Slider' type="text" name="light-schedule"
-                               data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="255"/>
-                        <br>
+                        <form method="post" action="/brightness-settings">
+                            {{ csrf_field() }}
+                            @foreach ($rooms as $room)
+                                <h4>{{ $room->name }}</h4>
+                                <label for="brightness-slider{{ $room->id }}">Jačina svjetla: </label>
+                                <input id="brightness-slider{{ $room->id }}" data-slider-id='ex1Slider' type="text" name="light_schedule[]" class="brightness-slider"
+                                       data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="{{ $room->brightness }}"/>
+                                <input type="hidden" value="{{ $room->id }}" name="room_id[]">
+                                <br>
+                            @endforeach
+                            <input type="submit" class="btn btn-success pull-right" value="Spremi" name="submit">
+                        </form>
                     </div>
 
                     <div id="room-settings">
                         <h3>Sobe:</h3>
-                        <div class="row">
-                            <div class="col-sm-4 col-md-3">
-                                <p>Soba 1</p>
-                            </div>
-                            <div class="col-sm-4 col-sm-offset-4">
-                                <button type="button" class="btn btn-default">Preimenuj</button>
-                                <button type="button" class="btn btn-danger">Izbriši</button>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-md-3">
-                                <p>Soba 2</p>
-                            </div>
-                            <div class="col-sm-4 col-sm-offset-4">
-                                <button type="button" class="btn btn-default">Preimenuj</button>
-                                <button type="button" class="btn btn-danger">Izbriši</button>
-                            </div>
-                        </div>
+                        <form method="post" action="/room-name-settings">
+                            {{ csrf_field() }}
+                            @foreach ($rooms as $room)
+                                <div class="row">
+                                    <div class="col-sm-4 col-md-3">
+                                        <p class="name{{ $room->id }}">{{ $room->name }}</p>
+                                    </div>
+                                    <div class="col-sm-4 col-sm-offset-4">
+                                        <button type="button" class="btn btn-default rename" data-room="name{{ $room->id }}">Preimenuj</button>
+                                        <input type="submit" class="btn btn-danger" data-room="name{{ $room->id }}" value="Izbriši" name="delete">
+                                        <input type="hidden" value="{{ $room->id }}" name="room_id">
+                                    </div>
+                                </div>
+                                <br>
+                            @endforeach
+                        </form>
                     </div>
                 </div>
             </div>
@@ -101,22 +113,38 @@
             timeSetting.hide();
             brightnessSetting.hide();
             roomSetting.hide();
-            $("#ex2").slider({
-                tooltip_split: true,
-                formatter: function(value) {
-                    var minutes = value - Math.floor(value);
-                    var hours = Math.floor(value);
-                    if (minutes !== 0) {
-                        return hours + ':' + minutes * 60;
-                    }else{
-                        return hours + ':00';
+            $('.time-slider').each(function () {
+                $(this).slider({
+                    tooltip_split: true,
+                    formatter: function(value) {
+                        var minutes = value - Math.floor(value);
+                        var hours = Math.floor(value);
+                        if (minutes !== 0) {
+                            return hours + ':' + minutes * 60;
+                        }else{
+                            return hours + ':00';
+                        }
                     }
-                }
+                });
             });
-            $('#ex1').slider({
-                formatter: function(value) {
-                    return 'Trenutna jačina: ' + value;
-                }
+
+            $('.brightness-slider').each(function () {
+                $(this).slider({
+                    formatter: function(value) {
+                        return 'Trenutna jačina: ' + value;
+                    }
+                });
+            });
+
+            $('.rename').click(function(){
+                var className = $(this).attr('data-room');
+                var paragraph = $('.' + className);
+                var value = paragraph.text();
+                var new_html = (
+                    '<input value="' + value + '" name="name" class="form-control">');
+                paragraph.replaceWith(new_html);
+                new_html = '<input type="submit" class="btn btn-success" value="Spremi" name="submit">';
+                $(this).replaceWith(new_html);
             });
 
 

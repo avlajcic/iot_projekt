@@ -19,4 +19,6 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/time-settings', 'HomeController@timeSettings')->name('timeSettings');
+Route::post('/time-settings', 'HomeController@timeSettings')->name('timeSettings');
+Route::post('/brightness-settings', 'HomeController@brightnessSettings')->name('brightnessSettings');
+Route::post('/room-name-settings', 'HomeController@roomNameSettings')->name('roomNameSettings');
