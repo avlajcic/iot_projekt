@@ -53,7 +53,10 @@
                             <b>0</b>
                             <input id="time-slider{{ $room->id }}" type="text" class="span2 time-slider" value=""
                                    data-slider-min="0" data-slider-max="24"
-                                   data-slider-step="0.25" data-slider-value="[7,22]" name="time_schedule[]"/>
+                                   data-slider-step="0.25" data-slider-value="[7,22]" name="time_schedule[]"
+                                   data-start-time="{{ $room->start_time }}"
+                                   data-end-time="{{ $room->end_time }}"
+                                />
                             <b>24</b>
                             <br>
                             <label for="automaticCheck">Automatski rad:</label>
@@ -82,22 +85,22 @@
 
                     <div id="room-settings">
                         <h3>Sobe:</h3>
-                        <form method="post" action="/room-name-settings">
-                            {{ csrf_field() }}
                             @foreach ($rooms as $room)
-                                <div class="row">
-                                    <div class="col-sm-4 col-md-3">
-                                        <p class="name{{ $room->id }}">{{ $room->name }}</p>
+                                <form method="post" action="/room-name-settings">
+                                    {{ csrf_field() }}
+                                    <div class="row">
+                                        <div class="col-sm-4 col-md-3">
+                                            <p class="name{{ $room->id }}">{{ $room->name }}</p>
+                                        </div>
+                                        <div class="col-sm-4 col-sm-offset-4">
+                                            <button type="button" class="btn btn-default rename" data-room="name{{ $room->id }}">Preimenuj</button>
+                                            <input type="submit" class="btn btn-danger" data-room="name{{ $room->id }}" value="Izbriši" name="delete">
+                                            <input type="hidden" value="{{ $room->id }}" name="room_id">
+                                        </div>
                                     </div>
-                                    <div class="col-sm-4 col-sm-offset-4">
-                                        <button type="button" class="btn btn-default rename" data-room="name{{ $room->id }}">Preimenuj</button>
-                                        <input type="submit" class="btn btn-danger" data-room="name{{ $room->id }}" value="Izbriši" name="delete">
-                                        <input type="hidden" value="{{ $room->id }}" name="room_id">
-                                    </div>
-                                </div>
-                                <br>
+                                    <br>
+                                </form>
                             @endforeach
-                        </form>
                     </div>
                 </div>
             </div>
@@ -126,6 +129,15 @@
                         }
                     }
                 });
+                var start = $.map( $(this).attr('data-start-time').split(':'), Number );
+                var end = $.map( $(this).attr('data-end-time').split(':'), Number );
+                start[1] = changeMinutes(start[1]);
+                end[1] = changeMinutes(end[1]);
+                var value = '[' + start[0] + '.' + start[1] + ',' + end[0] + '.' + end[1] + ']';
+                // console.log(value);
+
+                $(this).data('test', '8,11');
+                console.log($(this).val())
             });
 
             $('.brightness-slider').each(function () {
@@ -135,6 +147,7 @@
                     }
                 });
             });
+
 
             $('.rename').click(function(){
                 var className = $(this).attr('data-room');
@@ -179,6 +192,18 @@
 
                 }
             });
+
+
+            function changeMinutes(minutes)
+            {
+                if (minutes === 15)
+                    return 25;
+                else if (minutes === 30)
+                    return 50;
+                else if (minutes === 45)
+                    return 75;
+                else return minutes;
+            }
         })
     </script>
 @endsection

@@ -31,9 +31,14 @@ Route::post('/addroom', function (Request $request) {
     $arduinoId = $request->arduino_id;
     $userId = $request->user_id;
 
-    $user = User::where('id', $userId)->first();
+    $room = Room::where(array('user_id' => $userId,'arduino_id' => $arduinoId ))->first();
+    if ($room){
+        $responseArray = array('status' => 1, 'response' => 'Room already exists.');
+    }
+    else {
+        $user = User::where('id', $userId)->first();
 
-    if ($user) {
+        if ($user) {
             $newRoom = new Room();
             $newRoom->name = 'Soba' . $userId . $arduinoId;
             $newRoom->start_time = new DateTime('00:00:00');
@@ -45,11 +50,11 @@ Route::post('/addroom', function (Request $request) {
 
             $newRoom->save();
 
-        $responseArray = array('status' => 1, 'response' => 'Room added.');
-    }else{
-        $responseArray = array('status' => 0, 'response' => 'Can\'t find user with that id.');
+            $responseArray = array('status' => 1, 'response' => 'Room added.');
+        } else {
+            $responseArray = array('status' => 0, 'response' => 'Can\'t find user with that id.');
+        }
     }
-
 
     return response(json_encode($responseArray))->header('Content-Type', 'application/json');
 });

@@ -35,7 +35,7 @@ class HomeController extends Controller
             $timeInput = explode(',', $request->time_schedule[$index]);
             $room->start_time = $this->formatTime($timeInput[0]);
             $room->end_time = $this->formatTime($timeInput[1]);
-            if (in_array($request->room_id[$index], $request->automatic)){
+            if (isset($request->automatic) && in_array($request->room_id[$index], $request->automatic)){
                 $room->automatic = true;
             }else{
                 $room->automatic = false;
@@ -62,7 +62,9 @@ class HomeController extends Controller
 
     public function roomNameSettings(Request $request)
     {
+
         $room = Room::find($request->room_id);
+
         if (isset($request->delete)) {
             $room->delete();
         } else {
