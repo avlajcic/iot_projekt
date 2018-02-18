@@ -13,7 +13,9 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
+                    @foreach ($errorRooms as $room)
+                        <h3 style="color:red; text-align:center">{{ $room->name }} has an error!</h3>
+                    @endforeach
                     <div class="row">
                         <div class="col-sm-6 col-md-4">
                             <a href="#time-settings" id="time-settings-button">
@@ -48,7 +50,7 @@
                         <form method="post" action="/time-settings">
                         {{ csrf_field() }}
                         @foreach ($rooms as $room)
-                            <h4>{{ $room->name }}</h4>
+                            <h4 @if ($room->error) style="color:red" @endif >{{ $room->name }}</h4>
                             <label for="time-slider{{ $room->id }}">Vrijeme rada: </label>
                             <b>0</b>
                             <input id="time-slider{{ $room->id }}" type="text" class="span2 time-slider" value=""
@@ -72,7 +74,7 @@
                         <form method="post" action="/brightness-settings">
                             {{ csrf_field() }}
                             @foreach ($rooms as $room)
-                                <h4>{{ $room->name }}</h4>
+                                <h4 @if ($room->error) style="color:red" @endif >{{ $room->name }}</h4>
                                 <label for="brightness-slider{{ $room->id }}">Jačina svjetla: </label>
                                 <input id="brightness-slider{{ $room->id }}" data-slider-id='ex1Slider' type="text" name="light_schedule[]" class="brightness-slider"
                                        data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="{{ $room->brightness }}"/>
@@ -117,6 +119,13 @@
             brightnessSetting.hide();
             roomSetting.hide();
             $('.time-slider').each(function () {
+                var start = $.map( $(this).attr('data-start-time').split(':'), Number );
+                var end = $.map( $(this).attr('data-end-time').split(':'), Number );
+                start[1] = changeMinutes(start[1]);
+                end[1] = changeMinutes(end[1]);
+                start = start[0] + start[1] / 100;
+                end = end[0] + end[1] / 100;
+
                 $(this).slider({
                     tooltip_split: true,
                     formatter: function(value) {
@@ -127,17 +136,11 @@
                         }else{
                             return hours + ':00';
                         }
-                    }
+                    },
+                    value: [start, end],
+                    tooltip: 'always'
                 });
-                var start = $.map( $(this).attr('data-start-time').split(':'), Number );
-                var end = $.map( $(this).attr('data-end-time').split(':'), Number );
-                start[1] = changeMinutes(start[1]);
-                end[1] = changeMinutes(end[1]);
-                var value = '[' + start[0] + '.' + start[1] + ',' + end[0] + '.' + end[1] + ']';
-                // console.log(value);
 
-                $(this).data('test', '8,11');
-                console.log($(this).val())
             });
 
             $('.brightness-slider').each(function () {

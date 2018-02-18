@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Room extends Model
 {
     protected $fillable = [
-        'id','name','start_time','end_time','automatic','brightness','arduino_id','user_id'
+        'id','name','start_time','end_time','automatic','brightness','arduino_id','user_id', 'error'
     ];
 
     public $timestamps = false;

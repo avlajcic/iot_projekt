@@ -24,7 +24,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home', ['rooms' => Room::orderBy('id')->get()]);
+        $roomsWithError = Room::where('error', true)->get();
+        return view('home', ['rooms' => Room::orderBy('id')->get(), 'errorRooms' => $roomsWithError]);
     }
 
     public function timeSettings(Request $request)

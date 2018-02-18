@@ -33,7 +33,13 @@ Route::post('/addroom', function (Request $request) {
 
     $room = Room::where(array('user_id' => $userId,'arduino_id' => $arduinoId ))->first();
     if ($room){
-        $responseArray = array('status' => 1, 'response' => 'Room already exists.');
+        if ($room->error){
+            $room->error = false;
+            $room->save();
+            $responseArray = array('status' => 1, 'response' => 'Removed error for room.');
+        }else {
+            $responseArray = array('status' => 1, 'response' => 'Room already exists.');
+        }
     }
     else {
         $user = User::where('id', $userId)->first();
@@ -47,6 +53,7 @@ Route::post('/addroom', function (Request $request) {
             $newRoom->brightness = 255;
             $newRoom->arduino_id = $arduinoId;
             $newRoom->user_id = $user->id;
+            $newRoom->error = false;
 
             $newRoom->save();
 
@@ -75,6 +82,23 @@ Route::post('/deleteroom', function (Request $request) {
             $responseArray = array('status' => 0, 'response' => 'Can\'t find room.');
         }
     }else{
+        $responseArray = array('status' => 0, 'response' => 'Can\'t find user with that id.');
+    }
+
+
+    return response(json_encode($responseArray))->header('Content-Type', 'application/json');
+});
+
+Route::post('/error', function (Request $request) {
+    $arduinoId =  $request->arduino_id;
+    $userId = $request->user_id;
+
+    $room = Room::where(array('user_id' => $userId,'arduino_id' => $arduinoId ))->first();
+    if ($room){
+        $room->error = true;
+        $room->save();
+        $responseArray = array('status' => 1, 'response' => 'Error has been set for room.');
+    }else {
         $responseArray = array('status' => 0, 'response' => 'Can\'t find user with that id.');
     }
 
