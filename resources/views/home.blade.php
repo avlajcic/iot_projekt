@@ -77,7 +77,7 @@
                                 <h4 @if ($room->error) style="color:red" @endif >{{ $room->name }}</h4>
                                 <label for="brightness-slider{{ $room->id }}">Jačina svjetla: </label>
                                 <input id="brightness-slider{{ $room->id }}" data-slider-id='ex1Slider' type="text" name="light_schedule[]" class="brightness-slider"
-                                       data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="{{ $room->brightness }}"/>
+                                       data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="{{ (int)$room->brightness/25 }}"/>
                                 <input type="hidden" value="{{ $room->id }}" name="room_id[]">
                                 <br>
                             @endforeach

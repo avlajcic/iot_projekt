@@ -50,7 +50,7 @@ Route::post('/addroom', function (Request $request) {
             $newRoom->start_time = new DateTime('00:00:00');
             $newRoom->end_time = new DateTime('23:45:00');
             $newRoom->automatic = false;
-            $newRoom->brightness = 255;
+            $newRoom->brightness = 250;
             $newRoom->arduino_id = $arduinoId;
             $newRoom->user_id = $user->id;
             $newRoom->error = false;

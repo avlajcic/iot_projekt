@@ -53,7 +53,7 @@ class HomeController extends Controller
 
         foreach ($request->room_id as $index => $roomId){
             $room = Room::find($roomId);
-            $room->brightness = $request->light_schedule[$index];
+            $room->brightness = (int) $request->light_schedule[$index] * 25;
 
             $room->save();
         }
