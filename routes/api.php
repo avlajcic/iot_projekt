@@ -46,7 +46,7 @@ Route::post('/addroom', function (Request $request) {
 
         if ($user) {
             $newRoom = new Room();
-            $newRoom->name = 'Soba' . $userId . $arduinoId;
+            $newRoom->name = 'Soba' . $arduinoId;
             $newRoom->start_time = new DateTime('00:00:00');
             $newRoom->end_time = new DateTime('23:45:00');
             $newRoom->automatic = false;

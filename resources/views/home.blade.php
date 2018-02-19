@@ -5,7 +5,6 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
-                <div class="panel-heading">Dashboard</div>
 
                 <div class="panel-body">
                     @if (session('status'))
@@ -14,7 +13,7 @@
                         </div>
                     @endif
                     @foreach ($errorRooms as $room)
-                        <h3 style="color:red; text-align:center">{{ $room->name }} has an error!</h3>
+                        <h3 style="color:red; text-align:center">{{ $room->name }} ima grešku!</h3>
                     @endforeach
                     <div class="row">
                         <div class="col-sm-6 col-md-4">

@@ -73,10 +73,10 @@
 
                 <div class="links">
                     @guest
-                        <a href="{{ route('login') }}">Login</a>
-                        <a href="{{ route('register') }}">Register</a>
+                        <a href="{{ route('login') }}">Prijava</a>
+                        <a href="{{ route('register') }}">Registracija</a>
                     @else
-                        <a href="{{ url('/home') }}">Dashboard</a>
+                        <a href="{{ url('/home') }}">Početna</a>
                     @endguest
                 </div>
             </div>
